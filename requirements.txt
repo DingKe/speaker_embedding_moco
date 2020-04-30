@@ -1,0 +1,7 @@
+kaldi-io==0.9.4
+numpy==1.16.4
+Pillow==6.2.1
+scikit-learn==0.22.2.post1
+six==1.13.0
+tensorboardX==1.1
+torch==1.2.0
