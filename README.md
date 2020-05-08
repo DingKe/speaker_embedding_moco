@@ -1,14 +1,17 @@
 Learning Speaker Embedding with Momentum Contrast
 ===
 # Introduction  
-This repository contains the code release for our paper titled as "*Learning Speaker Embedding with Momentum Contrast*". The link to the [paper](https://arxiv.org/abs/2001.01986) is provided as well.
+This repository contains the code release for our paper [Learning Speaker Embedding with Momentum Contrast](https://arxiv.org/abs/2001.01986).
 
-The code has been developed using Kaldi and Pytorch. The main idea is that Kaldi can be used to do feature extraction and post-processings while Pytorch is a betterchoice to bulid neural network with different network structures and loss functions.
+The code has been developed using Kaldi and Pytorch. Kaldi is only used for feature extraction and post-processings. All neural networks are trained using Pytorch.
 
-The purpose of the project is to make researches on neural network based speaker verification easier, We also try to reproduce some results in our papers.  
+The purpose of the project is to make researches on neural network based speaker verification easier. We also try to reproduce some results in our papers.
+
 # Requirements
+
+The code is tested with the following dependencies.
 * Python: 3.6.8
-* Kaldi: >5.5
+* Kaldi: 5.5
 * kaldi-io: 0.9.4
 * numpy: 1.16.4
 * Pillow: 6.2.1
@@ -16,6 +19,7 @@ The purpose of the project is to make researches on neural network based speaker
 * six: 1.13.0
 * tensorboardX: 1.1
 * torch: 1.2.0
+
 In addition to Kaldi, you can install the requirements via pip with:  
 `pip install -r requirements.txt`
 
@@ -78,10 +82,10 @@ sh test.sh \
 | Xvector-AAM | 2.29 | 0.2641 | 0.3374 |
 | Xvector-AAM-MoCo | 2.381 | 0.2285 | 0.2532 |
 ## DET
-![DET](./image/DET.png)
+![DET](image/DET.png)
 # Citation
 If you used this code please kindly cite the following paper:  
-Ke Ding., Xuanji He., Guanglu Wan., Learning Speaker Embedding with Momentum Contrast. arXiv preprint arXiv:2001.01986 (2020)
+Ke Ding, Xuanji He, Guanglu Wan. Learning Speaker Embedding with Momentum Contrast. arXiv preprint arXiv:2001.01986 (2020)
 # Contact
 If you have any question, please feel free to contact us:  
 | Auther | E-mail |
@@ -90,3 +94,6 @@ If you have any question, please feel free to contact us:
 | Xuanji He | hexuanji@meituan.com |
 | Guanglu Wan | wanguanglu@meituan.com |
 
+## License
+
+The code is BSD-style licensed, as found in the [LICENSE](LICENSE) file.
