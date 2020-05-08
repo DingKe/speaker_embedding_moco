@@ -179,37 +179,3 @@ def save_checkpoint(model, filename, optimizer=None, meta=None):
     if optimizer is not None:
         checkpoint['optimizer'] = optimizer.state_dict()
     torch.save(checkpoint, filename)
-
-
-def load_checkpoint_v1_to_v2(model,
-                             filename,
-                             map_location=None,
-                             strict=False,
-                             logger=None):
-    checkpoint = load_checkpoint(model,
-                                 filename,
-                                 map_location=map_location,
-                                 strict=False,
-                                 logger=logger)
-
-    # get state_dict from checkpoint
-    if isinstance(checkpoint, OrderedDict):
-        state_dict = checkpoint
-    elif isinstance(checkpoint, dict) and 'state_dict' in checkpoint:
-        state_dict = checkpoint['state_dict']
-
-    # strip LSTMPCell of state_dict
-    keys = list(state_dict.keys())
-    for key in keys:
-        if "forward_cell" in key:
-            new_key = key.replace("forward_cell.", "")
-            state_dict[new_key] = state_dict[key]
-            del state_dict[key]
-
-    # load state_dict
-    if hasattr(model, 'module'):
-        load_state_dict(model.module, state_dict, strict, logger)
-    else:
-        load_state_dict(model, state_dict, strict, logger)
-
-    return checkpoint

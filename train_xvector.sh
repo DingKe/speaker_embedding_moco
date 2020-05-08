@@ -7,8 +7,6 @@
 #             2020   Meituan-Dianping (Author: Xuanji He)
 # Apache 2.0.
 #
-# See ../README.txt for more info on data required.
-# Results (mostly equal error-rates) are inline in comments below.
 
 
 # The trials file is downloaded by local/make_voxceleb1.pl.

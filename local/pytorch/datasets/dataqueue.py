@@ -12,7 +12,7 @@ import threading
 import torch
 from torch.multiprocessing import Process, Queue, Event, Condition
 
-from ..nnet.core import np2tensor, tensor2pin
+from ..nnet.core import np2tensor
 
 
 class BackgroundGenerator(threading.Thread):
@@ -74,7 +74,6 @@ class Prefetcher(object):
        # Arguments
             data_queue: instance of DataQueue
             buffer_size: max size of thread queue
-            pin_memory: if True, transfer Tensor to pinned memory
             timeout: if not None, wait data for at most this mush time, raise exception otherwise
             postprocess: if not None, invoke this on the data
             stream: optional cuda stream. If given, synchronize it before return data.
@@ -83,12 +82,10 @@ class Prefetcher(object):
     def __init__(self,
                  data_queue,
                  buffer_size=1,
-                 pin_memory=False,
                  timeout=None,
                  postprocess=None,
                  stream=None):
         self.buffer_size = buffer_size
-        self.pin_memory = pin_memory
         self.timeout = timeout
         self.postprocess = postprocess
         self.stream = stream
@@ -103,7 +100,7 @@ class Prefetcher(object):
         self.thread = threading.Thread(target=self.fetch,
                                        args=(self.in_queue, self.out_queue,
                                              self.terminate_sig, self.cv,
-                                             self.pin_memory, self.timeout,
+                                             self.timeout,
                                              self.postprocess, buffer_size))
         self.thread.daemon = True
         self.thread.start()
@@ -127,8 +124,7 @@ class Prefetcher(object):
         return data
 
     @staticmethod
-    def fetch(in_q, out_q, terminate_sig, cv, pin_memory, timeout, postprocess,
-              max_qsize):
+    def fetch(in_q, out_q, terminate_sig, cv, timeout, postprocess, max_qsize):
         while True:
             with cv:
                 if not terminate_sig.is_set() and out_q.qsize() >= max_qsize:
@@ -141,8 +137,6 @@ class Prefetcher(object):
                 if data is None: continue
                 if postprocess is not None:
                     data = postprocess(data)
-                if pin_memory:
-                    data = tensor2pin(data)
 
                 out_q.put(data)
                 with cv:
