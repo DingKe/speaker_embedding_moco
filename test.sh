@@ -40,7 +40,7 @@ if [ $stage -le 1 ]; then
   local/extract_xvectors.sh \
     --cmd "$train_cmd" --nj $nj \
     --mdl $mdl \
-    --chunk_size -1 \
+    --min-chunk_size -1 \
     --pad-input true \
     $dir $data/test $exp/xvectors_test || exit 1;
 fi

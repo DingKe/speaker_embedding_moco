@@ -125,18 +125,15 @@ with torch.no_grad():
 
         print(f"Process {key} with {len(feat)} frames", file=sys.stderr)
 
-        if chunk_size <= 0:
-            xvector = extract(model, feat)
-        else:
-            xvector_avg = 0
-            num_frames = 0
-            for offset in range(0, len(feat), chunk_size):
-                sub_feat = feat[offset:offset + chunk_size]
-                if len(sub_feat) < min_chunk_size: continue
-                xvector_avg = xvector_avg + extract(model,
-                                                    sub_feat) * len(sub_feat)
-                num_frames += len(sub_feat)
-            xvector = xvector_avg / num_frames
+        xvector_acc = 0
+        num_frames = 0
+        for offset in range(0, len(feat), chunk_size):
+            sub_feat = feat[offset:offset + chunk_size]
+            if len(sub_feat) < min_chunk_size: continue
+            xvector_acc = xvector_acc + extract(model,
+                                                sub_feat) * len(sub_feat)
+            num_frames += len(sub_feat)
+        xvector = xvector_acc / num_frames
 
         kaldi_io.write_vec_flt(fptr, xvector, key)
 fptr.close()
