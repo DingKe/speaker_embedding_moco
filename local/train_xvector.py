@@ -223,9 +223,6 @@ lr_scheduler = LambdaLR(optimizer, lr_lambda=lr_lambda)
 log_dir = os.path.join(model_dir, f'log/dist{torch.cuda.device_count()}')
 writer = SummaryWriter(log_dir)
 
-GB = 1024 * 1024 * 1024
-max_cached = 13 * GB
-
 # Train the Model
 checkpoint_period = args.checkpoint_period
 for epoch in range(args.start_epoch, num_epochs):
@@ -259,9 +256,6 @@ for epoch in range(args.start_epoch, num_epochs):
     steps = 0
     target_samples = checkpoint_period
     while total_processed < args.frames_per_epoch:
-        if torch.cuda.memory_cached(device) > max_cached:
-            torch.cuda.empty_cache()
-
         inputs, labels = train_loader.get()
         inputs = inputs.to(device)
         labels = labels.to(device)

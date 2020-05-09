@@ -6,14 +6,8 @@ import numpy as np
 import math
 import torch
 from torch import nn
-from torch.autograd import Function
 import torch.nn.functional as F
 from torch.nn.utils.rnn import PackedSequence
-
-try:
-    import splice_cuda as _splice_cuda
-except:
-    _splice_cuda = None
 
 
 def get_activation(callable_or_str):
@@ -34,17 +28,6 @@ def np2tensor(arr):
         return {key: np2tensor(val) for key, val in arr.items()}
     else:
         return arr
-
-
-def tensor2pin(tensors):
-    if isinstance(tensors, torch.Tensor):
-        return tensors.pin_memory()
-    elif isinstance(tensors, collections.Sequence):
-        return [tensor2pin(t) for t in tensors]
-    elif isinstance(tensors, collections.Mapping):
-        return {key: tensor2pin(tensor) for key, tensor in tensors.items()}
-    else:
-        return tensors
 
 
 class SequenceWise(nn.Module):
@@ -91,31 +74,12 @@ class SequenceWise(nn.Module):
             return tmpstr
 
 
-class SpliceFunction(Function):
-    @staticmethod
-    def forward(ctx, input, context, padding=False):
-        output = _splice_cuda.forward(input, context, padding)
-        ctx.context = context
-        ctx.padding = padding
-
-        return output
-
-    @staticmethod
-    def backward(ctx, grad_output):
-        context = ctx.context
-        padding = ctx.padding
-        grad_input = _splice_cuda.backward(grad_output, context, padding)
-
-        return grad_input, None, None
-
-
 class Splice(nn.Module):
     def __init__(self,
                  context,
                  full_context=False,
                  batch_first=True,
-                 keep_dims=False,
-                 padding_mode=None):
+                 keep_dims=False):
         """
         Splice multiple frames.
         Helpful for implementing Time Delayed Neural Network (TDNN).
@@ -127,48 +91,9 @@ class Splice(nn.Module):
         self.context = self.normalize_context(context, full_context)
         self.batch_first = batch_first
         self.keep_dims = keep_dims
-        self.padding_mode = padding_mode
-
-        if padding_mode:
-            assert padding_mode == "zeros", "Only zeros mode supported!"
-            self.left_context = max(-self.context[0], 0)
-            self.right_context = max(self.context[-1], 0)
-        else:
-            self.left_context = self.right_context = 0
-
-        if self.left_context == 0 and self.right_context == 0:
-            self.padding_mode = None
-
-        if not _splice_cuda or not batch_first:
-            # splice_cuda only support batch_first for now
-            self.use_splice_cuda = False
-        else:
-            self.use_splice_cuda = True
-            self.context = torch.IntTensor(self.context, device="cpu")
 
     def forward(self, x):
         assert len(x.size()) == 3, "Input should be a 3D tensor"
-
-        if self.use_splice_cuda and x.is_cuda:
-            return self._forward_cuda(x)
-        else:
-            return self._forward_py(x)
-
-    def _forward_cuda(self, x):
-        y = SpliceFunction.apply(x, self.context, self.padding_mode == "zeros")
-        if not self.keep_dims:
-            b, l = y.shape[:2]
-            y = y.view(b, l, -1)
-
-        return y
-
-    def _forward_py(self, x):
-        if self.padding_mode:
-            if self.batch_first:
-                pad = (0, 0, self.left_context, self.right_context, 0, 0)
-            else:
-                pad = (self.left_context, self.right_context, 0, 0, 0, 0)
-            x = nn.functional.pad(x, pad=pad, mode="constant", value=0)
 
         input_size = x.size()
         if self.batch_first:
@@ -215,9 +140,6 @@ class Splice(nn.Module):
 
     @staticmethod
     def get_valid_steps(context, input_sequence_length):
-        if isinstance(context, torch.IntTensor):
-            context = context.cpu().numpy()
-
         start = 0 if context[0] >= 0 else -context[0]
         end = input_sequence_length if context[
             -1] <= 0 else input_sequence_length - context[-1]
@@ -271,8 +193,7 @@ class TDNN(nn.Module):
                  context,
                  full_context=False,
                  activation='relu',
-                 bias=True,
-                 padding_mode=None):
+                 bias=True)
         """
         :param input_dim:
         """
@@ -283,9 +204,8 @@ class TDNN(nn.Module):
         self.ful_context = full_context
         self.activation = get_activation(activation)
         self.bias = bias
-        self.padding_mode = padding_mode
 
-        self.splice = Splice(context, full_context, padding_mode=padding_mode)
+        self.splice = Splice(context, full_context)
         linear = nn.Linear(input_dim * len(self.splice.context), output_dim,
                            bias)
         self.linear = SequenceWise(linear)

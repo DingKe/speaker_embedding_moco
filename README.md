@@ -1,5 +1,3 @@
-Learning Speaker Embedding with Momentum Contrast
-===
 # Introduction  
 This repository contains the code release for our paper [Learning Speaker Embedding with Momentum Contrast](https://arxiv.org/abs/2001.01986).
 
@@ -24,10 +22,13 @@ In addition to Kaldi, you can install the requirements via pip with:
 `pip install -r requirements.txt`
 
 # Usage
+## Prerequisites
+Set KALDI_ROOT properly in path.sh. Link $KALDI_ROOT/egs/wsj/s5/utils to utils.
+
 ## Step1: Train MoCo Model
 To train the MoCo Model with SpecAugment, run:  
 ```shell
-sh run_moco.sh \
+sh train_moco.sh \
   --voxceleb1_root [voxceleb1 dir] \
   --voxceleb2_root [voxceleb2 dir] \
   --rirs_noises_root [rirs_noises dir] \
@@ -38,7 +39,7 @@ sh run_moco.sh \
 ## Step2: Train AAM-Softmax
 To train AAM-Softmax with the pretrained MoCo model, run:  
 ```shell
-sh run_xvector.sh \
+sh train_xvector.sh \
   --voxceleb1_root [voxceleb1 dir] \
   --voxceleb2_root [voxceleb2 dir] \
   --rirs_noises_root [rirs_noises dir] \
@@ -48,6 +49,7 @@ sh run_xvector.sh \
   --exp [exp dir]
 ```
 **Note:** If the MoCo Model doesn't exist, run_xvector.sh will be trained like standard Xvector recipe.  
+
 ## Step3: Evaluate the performace with trained model
 After training, you can evaluate the performance on the test set, run:  
 ```shell
@@ -58,6 +60,7 @@ sh test.sh \
   --mdl [model name, default final.pkl] \
   --plda_score [apply plda if true else apply cosine score, default true]
 ```
+
 # Setting
 * Training data: All of Voxceleb2, plus the training portion of Voxceleb1.
 * Test data: The test portion of Voxceleb1.
@@ -65,8 +68,10 @@ sh test.sh \
 * Chunk Size: From 200 ~ 400.
 * Batch Size: 1024.
 * Backend Classifier: PLDA and Cosine.
-* Evaluate Model: We selet epoch=900(checkpoint\_e900.pkl) to evaluate the performance, although the AAM-Softmax trained with pretrained MoCo model would be converge faster.
+* Evaluate Model: We selet epoch=900(checkpoint\_e900.pkl) to evaluate the performance, although the AAM-Softmax trained with pretrained MoCo model would converge faster.
+
 # Performance
+
 ## PLDA
 | Method | EER(%) | minDCT(0.01) | minDCT(0.001) |
 |:------ | :----: | :----------: | :-----------: |
@@ -74,6 +79,7 @@ sh test.sh \
 | Xvector| 3.335 | 0.3812 | 0.6194 |
 | Xvector-AAM | 2.582 | 0.3423 | 0.5907 |
 |Xvector-AAM-MoCo | 2.46 | 0.2686 | 0.3907 |
+
 ## Cosine
 | Method | EER(%) | minDCT(0.01) | minDCT(0.001) |
 |:------ | :----: | :----------: | :-----------: |
@@ -81,11 +87,14 @@ sh test.sh \
 | Xvector | 7.306 | 0.5759 | 0.7545 |
 | Xvector-AAM | 2.29 | 0.2641 | 0.3374 |
 | Xvector-AAM-MoCo | 2.381 | 0.2285 | 0.2532 |
+
 ## DET
 ![DET](image/DET.png)
+
 # Citation
 If you used this code please kindly cite the following paper:  
 Ke Ding, Xuanji He, Guanglu Wan. Learning Speaker Embedding with Momentum Contrast. arXiv preprint arXiv:2001.01986 (2020)
+
 # Contact
 If you have any question, please feel free to contact us:  
 | Auther | E-mail |
@@ -94,6 +103,6 @@ If you have any question, please feel free to contact us:
 | Xuanji He | hexuanji@meituan.com |
 | Guanglu Wan | wanguanglu@meituan.com |
 
-## License
+# License
 
 The code is BSD-style licensed, as found in the [LICENSE](LICENSE) file.
