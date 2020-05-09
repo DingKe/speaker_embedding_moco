@@ -10,6 +10,10 @@
 nj=30
 cmd=run.pl
 
+min_chunk_size=   # The mininum chunk size over which the embedding is extracted.
+                  # If left unspecified, it uses the min_chunk_size in the nnet
+                  # directory.
+
 chunk_size=     # The chunk size over which the embedding is extracted.
                 # If left unspecified, it uses the max_chunk_size in the nnet
                 # directory.
@@ -46,7 +50,7 @@ for f in $srcdir/$mdl $srcdir/min_chunk_size $srcdir/max_chunk_size $data/feats.
   [ ! -f $f ] && echo "No such file $f" && exit 1;
 done
 
-min_chunk_size=`cat $srcdir/min_chunk_size 2>/dev/null`
+[ -z "$min_chunk_size" ] && min_chunk_size=`cat $srcdir/min_chunk_size 2>/dev/null`
 max_chunk_size=`cat $srcdir/max_chunk_size 2>/dev/null`
 nnet=$srcdir/$mdl
 
