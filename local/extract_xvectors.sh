@@ -14,9 +14,9 @@ min_chunk_size=   # The mininum chunk size over which the embedding is extracted
                   # If left unspecified, it uses the min_chunk_size in the nnet
                   # directory.
 
-chunk_size=     # The chunk size over which the embedding is extracted.
-                # If left unspecified, it uses the max_chunk_size in the nnet
-                # directory.
+chunk_size=       # The chunk size over which the embedding is extracted.
+                  # If left unspecified, it uses the max_chunk_size in the nnet
+                  # directory.
 mdl=final.pkl
 
 score_cmd="local/xvector_compute.py"

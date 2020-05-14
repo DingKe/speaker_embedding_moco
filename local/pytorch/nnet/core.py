@@ -193,7 +193,7 @@ class TDNN(nn.Module):
                  context,
                  full_context=False,
                  activation='relu',
-                 bias=True)
+                 bias=True):
         """
         :param input_dim:
         """

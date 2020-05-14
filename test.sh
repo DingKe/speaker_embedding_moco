@@ -13,7 +13,6 @@ root_dir=`pwd -P`
 data=$root_dir/data
 exp=$root_dir/exp
 voxceleb1_trials=$data/test/trials
-#dir=/opt/meituan/cephfs/user/hadoop-speech/dingke02/sid/archive/voxceleb/moco/exp/unsup_1a
 dir=/opt/meituan/cephfs/user/hadoop-speech/hexuanji/sr/project/MoCo_Xvector/exp/xvector_1a
 mdl=checkpoint_e050.pkl
 
@@ -40,7 +39,7 @@ if [ $stage -le 1 ]; then
   local/extract_xvectors.sh \
     --cmd "$train_cmd" --nj $nj \
     --mdl $mdl \
-    --min-chunk_size -1 \
+    --min-chunk-size -1 \
     --pad-input true \
     $dir $data/test $exp/xvectors_test || exit 1;
 fi
