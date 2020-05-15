@@ -76,17 +76,17 @@ sh test.sh \
 | Method | EER(%) | minDCT(0.01) | minDCT(0.001) |
 |:------ | :----: | :----------: | :-----------: |
 | Ivector| 5.467  | 0.4859 | 0.6213 |
-| Xvector| 3.335 | 0.3812 | 0.6194 |
-| Xvector-AAM | 2.582 | 0.3423 | 0.5907 |
-|Xvector-AAM-MoCo | 2.46 | 0.2686 | 0.3907 |
+| Xvector| 3.34 | 0.3795 | 0.6138 |
+| Xvector-AAM | 2.55 | 0.3464 | 0.5848 |
+|Xvector-AAM-MoCo | 2.423 | 0.2856 | 0.3850 |
 
 ## Cosine
 | Method | EER(%) | minDCT(0.01) | minDCT(0.001) |
 |:------ | :----: | :----------: | :-----------: |
 | Ivector| 14.65 | 0.7195 | 0.8661 |
-| Xvector | 7.306 | 0.5759 | 0.7545 |
-| Xvector-AAM | 2.29 | 0.2641 | 0.3374 |
-| Xvector-AAM-MoCo | 2.381 | 0.2285 | 0.2532 |
+| Xvector | 7.349 | 0.5799 | 0.7418 |
+| Xvector-AAM | 2.306 | 0.2647 | 0.3372 |
+| Xvector-AAM-MoCo | 2.402 | 0.2232 | 0.3573 |
 
 ## DET
 ![DET](image/DET.png)
